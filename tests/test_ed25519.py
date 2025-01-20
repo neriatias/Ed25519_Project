@@ -1,58 +1,48 @@
 import unittest
 from src.ed25519 import generate_keys, sign_message, verify_signature
 
+
+
+
 class TestEd25519(unittest.TestCase):
-    """
-    Unit tests for Ed25519 implementation.
-    This class contains tests to ensure the correctness of key generation,
-    message signing, and signature verification.
-    """
 
     def test_sign_and_verify(self):
         """
-        Test signing a message and verifying the signature.
-        This test ensures that a valid signature can be generated and verified
-        for the same message using the corresponding public key.
+        Test that a message signed with the private key is successfully verified
+        with the corresponding public key.
         """
         # Generate keys
         private_key, public_key = generate_keys()
 
-        # Define a test message
-        message = b"Test Message"
+        # Message to sign
+        message = b"Functional Test Message"
 
         # Sign the message
         signature = sign_message(private_key, message)
 
         # Verify the signature
-        self.assertTrue(
-            verify_signature(public_key, message, signature.signature),
-            "The signature should be valid for the original message."
-        )
-
-    def test_invalid_signature(self):
+        assert verify_signature(public_key, message, signature.signature), "Failed to verify the signature."
+        print("Functional test: sign and verify passed!")
+    def test_tampered_message(self):
         """
-        Test verifying an invalid signature.
-        This test ensures that if a message is tampered with, or if the wrong
-        signature is used, the verification should fail.
+        Test that signature verification fails if the message is tampered with.
         """
         # Generate keys
         private_key, public_key = generate_keys()
 
-        # Define a test message and sign it
-        message = b"Test Message"
-        signature = sign_message(private_key, message)
+        # Original message
+        original_message = b"Original Message"
 
-        # Define a tampered message
+        # Tampered message
         tampered_message = b"Tampered Message"
 
-        # Verify the signature against the tampered message
-        self.assertFalse(
-            verify_signature(public_key, tampered_message, signature.signature),
-            "The signature should not be valid for a tampered message."
-        )
+        # Sign the original message
+        signature = sign_message(private_key, original_message)
+
+        # Verify the tampered message (should fail)
+        self.assertFalse(verify_signature(public_key, tampered_message, signature.signature),
+                         "Tampered message should not verify!")
+
 
 if __name__ == "__main__":
-    """
-    Entry point for running the unit tests.
-    """
     unittest.main()
