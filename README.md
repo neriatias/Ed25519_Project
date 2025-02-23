@@ -45,7 +45,7 @@ You should see output similar to:
 
 ``` bash
 ----------------------------------------------------------------------
-Ran 2 tests in 0.003s
+Ran 4 tests in 0.004s
 
 OK
 ```
